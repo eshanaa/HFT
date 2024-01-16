@@ -1,0 +1,136 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VisualHFT"
+        xmlns:View="clr-namespace:VisualHFT.View" 
+        xmlns:uc="clr-namespace:VisualHFT.UserControls" 
+        x:Class="VisualHFT.Dashboard"
+        xmlns:VM="clr-namespace:VisualHFT.ViewModel"
+        xmlns:Classes="clr-namespace:VisualHFT.Model"
+        mc:Ignorable="d"
+        d:DesignWidth="1800" 
+    
+        xmlns:materialDesign="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+        xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{StaticResource MaterialDesignFont}"                      
+        
+        
+        Title="MainWindow" WindowState="Maximized" d:DesignHeight="1259">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../GlobalStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="530" />
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.1*" />
+            <RowDefinition Height="0.6*" />
+            <RowDefinition Height="0.3*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Margin="5" VerticalAlignment="Stretch">
+            <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" >
+                    <Button Content="⛭" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40" Height="40" Margin="0" Padding="0" ToolTip="App Settings" Click="ButtonAppSettings_Click" />
+
+                    <!--SYMBOLS-->
+                    <Label Content="Symbol" HorizontalAlignment="Left" Margin="10,10,0,0" FontSize="18"/>
+                    <ComboBox x:Name="cboSelectedSymbol" ItemsSource="{Binding SymbolList}" SelectedItem="{Binding SelectedSymbol}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="340" FontSize="18"/>
+                    <!--STRATEGIES-->
+                    <Label Visibility="Collapsed" Content="Strategy" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="18"/>
+                    <ComboBox  Visibility="Collapsed" x:Name="cobStrategy" ItemsSource="{Binding Path=StrategyList}" SelectedItem="{Binding SelectedStrategy}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="203" FontSize="18"/>
+                </StackPanel>
+                <WrapPanel Orientation="Horizontal" Margin="20" HorizontalAlignment="Left">
+                    <!-- Buttons inside a WrapPanel -->
+                    <Button Width="200" Height="50" Margin="10" Background="Red" BorderBrush="White" Content="🛑 Abort" ToolTip="Abort remote system (terminate it)" Command="{Binding cmdAbort}"/>
+                    <Button Width="200" Height="50" Margin="10" Content="🧩Plugins Management" ToolTip="Manage VisualHFT plugins" Click="ButtonPluginManagement_Click" />
+                    <Button Width="200" Height="50" Margin="10" Content="🕵️‍♂️ Pos. Analytics" ToolTip="Positions Analytics report" Click="ButtonAnalyticsReport_Click" />
+                    <Button Width="200" Height="50" Margin="10" Content="📈 Multi Venue Prices" ToolTip="See prices from all venues at the same time." Click="ButtonMultiVenuePrices_Click" />
+                    <!--<Button Width="150" Height="50" Margin="10" Content="Button 4"/>
+                    <Button Width="150" Height="50" Margin="10" Content="Button 5"/>
+                    <Button Width="150" Height="50" Margin="10" Content="Button 6"/>-->
+                </WrapPanel>
+
+            </StackPanel>
+            <View:ucProviderConnectivity x:Name="ucProviderConnectivity1" DockPanel.Dock="Bottom" />
+
+
+
+            <ScrollViewer VerticalAlignment="Stretch" Margin="10 0 0 20">
+                <StackPanel Orientation="Vertical" Margin="0" >
+                    <ItemsControl ItemsSource="{Binding Tiles}">
+                        <ItemsControl.Resources>
+                            <DataTemplate x:Key="MetricTileTemplate">
+                                <uc:MetricTile Width="150" Height="150" DataContext="{Binding}" Padding="10"/>
+                            </DataTemplate>
+                            <DataTemplate x:Key="MetricTileGroupTemplate">
+                                <uc:MetricTileGroup DataContext="{Binding}" />
+                            </DataTemplate>
+                            <DataTemplate x:Key="MetricTileUserControl">
+                                <uc:MetricTileCustomUI DataContext="{Binding}" Padding="10"/>
+                            </DataTemplate>
+                        </ItemsControl.Resources>
+
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding}">
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <!-- Default Template -->
+                                            <Setter Property="ContentTemplate" Value="{StaticResource MetricTileTemplate}" />
+                                            <Style.Triggers>
+                                                <!-- Conditional Template based on IsGroup -->
+                                                <DataTrigger Binding="{Binding IsGroup}" Value="True">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource MetricTileGroupTemplate}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsUserControl}" Value="True">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource MetricTileUserControl}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+
+                    </ItemsControl>
+
+                </StackPanel>
+            </ScrollViewer>
+
+
+
+
+
+
+        </DockPanel>
+
+
+
+
+        <View:ucOrderBook DataContext="{Binding OrderBook}" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="15 10 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <View:ucPositions DataContext="{Binding Positions}" Grid.Row="2" Grid.Column="1" Margin="15 0 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+
+    </Grid>
+</Window>

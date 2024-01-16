@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="VisualHFT.View.ucProviderConnectivity"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+
+             xmlns:local="clr-namespace:VisualHFT.View"
+            xmlns:behaviors="clr-namespace:VisualHFT.Helpers"
+
+            TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+            TextElement.FontWeight="Regular"
+            TextElement.FontSize="15"
+            TextOptions.TextFormattingMode="Ideal" 
+            TextOptions.TextRenderingMode="Auto"        
+            Background="{DynamicResource MaterialDesignPaper}"
+            FontFamily="{StaticResource MaterialDesignFont}"
+             
+
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="280" MinWidth="280">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../GlobalStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <GroupBox Header="Providers' Status" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5" Padding="5">
+            <ListView x:Name="lstItem" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Providers}" 
+                      behaviors:ListViewItemSelectedBehavior.Command="{Binding CmdUpdateStatus}"
+                      >
+
+
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Cursor="Hand" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}" ItemWidth="{Binding (ListView.View).ItemWidth, RelativeSource={RelativeSource AncestorType=ListView}}" MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}" ItemHeight="{Binding (ListView.View).ItemHeight, RelativeSource={RelativeSource AncestorType=ListView}}" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <WrapPanel Margin="5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="18" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <Image Source="{Binding StatusImage}" ToolTip="{Binding Tooltip}" Width="16" Height="16" Grid.Row="0" Grid.Column="0" />
+                                <TextBlock Text="{Binding ProviderName}" ToolTip="{Binding Tooltip}" Margin="5,0,0,0"  Grid.Row="0" Grid.Column="1" FontSize="28" HorizontalAlignment="Left" />
+                            </Grid>
+                        </WrapPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </GroupBox>
+    </Grid>
+
+</UserControl>
